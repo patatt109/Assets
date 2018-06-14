@@ -42,7 +42,7 @@ class AssetsComponent
 
     public function makePublicPath($path)
     {
-        if (preg_match('/^(https?|ftp)\:\:/', $path)) {
+        if (preg_match('/^((https?|ftp)\:)?\/\//', $path)) {
             return $path;
         }
         $path = ltrim($path, "/");
