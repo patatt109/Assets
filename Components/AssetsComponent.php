@@ -13,8 +13,17 @@
 namespace Modules\Assets\Components;
 
 
+use Modules\Assets\Builds\Build;
+use Modules\User\Commands\CreateCommand;
+use Phact\Helpers\Configurator;
+use Phact\Helpers\SmartProperties;
+
 class AssetsComponent
 {
+    use SmartProperties;
+
+    protected $_defaultBuild = 'default';
+
     /**
      * @var string[]
      */
@@ -40,13 +49,39 @@ class AssetsComponent
      */
     protected $_publicPath = '/static';
 
-    public function makePublicPath($path)
+    /**
+     * @var array
+     */
+    protected $_builds = [];
+
+    public function setBuilds($builds)
     {
-        if (preg_match('/^((https?|ftp)\:)?\/\//', $path)) {
-            return $path;
+        $this->_builds = [];
+        foreach ($builds as $name => $config) {
+            $this->_builds[$name] = Configurator::create($config);
         }
-        $path = ltrim($path, "/");
-        return $this->_publicPath . '/' . $path;
+    }
+
+    /**
+     * @param $name
+     * @return Build
+     * @throws \Exception
+     */
+    public function getBuild($name)
+    {
+        if (!isset($this->_builds[$name])) {
+            throw new \Exception("Build '{$name}' does not exists");
+        }
+        return $this->_builds[$name];
+    }
+
+    public function makePublicPath($path, $build = null)
+    {
+        if (!$build) {
+            $build = $this->getDefaultBuild();
+        }
+        $buildObject = $this->getBuild($build);
+        return $buildObject->buildPublicPath($path);
     }
 
     public function setPublicPath($path)
@@ -114,5 +149,21 @@ class AssetsComponent
     public function addInlineCSS($inlineCSS)
     {
         $this->_inlineCSS[] = $inlineCSS;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultBuild()
+    {
+        return $this->_defaultBuild;
+    }
+
+    /**
+     * @param string $defaultBuild
+     */
+    public function setDefaultBuild($defaultBuild)
+    {
+        $this->_defaultBuild = $defaultBuild;
     }
 }

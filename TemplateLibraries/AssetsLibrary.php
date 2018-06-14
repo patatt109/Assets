@@ -26,27 +26,27 @@ class AssetsLibrary extends TemplateLibrary
      * @kind accessorFunction
      * @name assets_public_path
      */
-    public static function makePublicPath($path)
+    public static function makePublicPath($path, $build = null)
     {
-        return Phact::app()->assets->makePublicPath($path);
+        return Phact::app()->assets->makePublicPath($path, $build);
     }
 
     /**
      * @kind accessorFunction
      * @name dependency_js
      */
-    public static function dependencyJS($path)
+    public static function dependencyJS($path, $build = null)
     {
-        Phact::app()->assets->addDependencyJS($path);
+        Phact::app()->assets->addDependencyJS($path, $build);
     }
 
     /**
      * @kind accessorFunction
      * @name dependency_css
      */
-    public static function dependencyCSS($path)
+    public static function dependencyCSS($path, $build = null)
     {
-        Phact::app()->assets->addDependencyCSS($path);
+        Phact::app()->assets->addDependencyCSS($path, $build);
     }
 
     /**
@@ -128,76 +128,5 @@ class AssetsLibrary extends TemplateLibrary
         return self::renderTemplate($template, [
             'inline' => $assets->getInlineCSS()
         ]);
-    }
-
-    /**
-     * @kind accessorFunction
-     * @name frontend_css_filename
-     * @return string|null
-     */
-    public static function getFrontendCssFile($name)
-    {
-        return self::getStaticFile('static.frontend.dist.css', $name);
-    }
-
-    /**
-     * @kind accessorFunction
-     * @name frontend_js_filename
-     * @return string|null
-     */
-    public static function getFrontendJsFile($name)
-    {
-        return self::getStaticFile('static.frontend.dist.js', $name);
-    }
-
-    /**
-     * @kind accessorFunction
-     * @name backend_css_filename
-     * @return string|null
-     */
-    public static function getBackendCssFile($name)
-    {
-        return self::getStaticFile('static.backend.dist.css', $name);
-    }
-
-    /**
-     * @kind accessorFunction
-     * @name backend_js_filename
-     * @return string|null
-     */
-    public static function getBackendJsFile($name)
-    {
-        return self::getStaticFile('static.backend.dist.js', $name);
-    }
-
-    /**
-     * @kind accessorFunction
-     * @name assets_filename
-     * @return string|null
-     */
-    public static function getStaticFile($path, $name)
-    {
-        return self::getFileName(Paths::get($path), $name);
-    }
-
-    /**
-     * @kind accessorFunction
-     * @name assets_filename_internal
-     * @return string|null
-     */
-    public static function getFileName($dir, $name)
-    {
-        $dir = new DirectoryIterator($dir);
-        foreach ($dir as $fileinfo) {
-            if (!$fileinfo->isDot()) {
-                $filename = $fileinfo->getFilename();
-                $cleanName = mb_substr($filename, 0, mb_strrpos($filename, '-', null, 'UTF-8'), 'UTF-8');
-                $rawName = mb_substr($filename, 0, mb_strrpos($filename, '.', null, 'UTF-8'), 'UTF-8');
-                if ($cleanName == $name || $rawName == $name) {
-                    return $fileinfo->getFilename();
-                }
-            }
-        }
-        return null;
     }
 }
