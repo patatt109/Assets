@@ -89,17 +89,17 @@ class AssetsComponent
         $this->_publicPath = rtrim($path, "/");
     }
 
-    public function addDependencyJS($string)
+    public function addDependencyJS($string, $build = null)
     {
         if (!in_array($string, $this->_dependenciesJS)) {
-            $this->_dependenciesJS[] = $this->makePublicPath($string);
+            $this->_dependenciesJS[] = $this->makePublicPath($string, $build);
         }
     }
 
-    public function addDependencyCSS($string)
+    public function addDependencyCSS($string, $build = null)
     {
         if (!in_array($string, $this->_dependenciesCSS)) {
-            $this->_dependenciesCSS[] = $this->makePublicPath($string);
+            $this->_dependenciesCSS[] = $this->makePublicPath($string, $build);
         }
     }
 
