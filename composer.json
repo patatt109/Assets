@@ -1,12 +1,12 @@
 {
-  "name": "phact-cmf-modules/admin",
-  "homepage": "https://github.com/phact-cmf-modules/Admin",
-  "description": "Admin module for phact CMF",
+  "name": "phact-cmf-modules/assets",
+  "homepage": "https://github.com/phact-cmf-modules/Assets",
+  "description": "Assets module for phact CMF",
   "type": "library",
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Modules\\Admin\\": ""
+      "Modules\\Assets\\": ""
     }
   },
   "require": {
@@ -22,6 +22,6 @@
   ],
   "support": {
     "email": "qantus@mail.ru",
-    "issues": "https://github.com/phact-cmf-modules/Admin/issues"
+    "issues": "https://github.com/phact-cmf-modules/Assets/issues"
   }
 }
