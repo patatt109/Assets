@@ -11,16 +11,14 @@
  */
 namespace Modules\Assets\TemplateLibraries;
 
-use DirectoryIterator;
-use Modules\Assets\Components\AssetsComponent;
-use Phact\Helpers\Paths;
-use Phact\Main\Phact;
-use Phact\Template\Renderer;
+use Modules\Assets\Components\AssetsComponentInterface;
+use Phact\Di\ComponentFetcher;
+use Phact\Template\RendererInterface;
 use Phact\Template\TemplateLibrary;
 
 class AssetsLibrary extends TemplateLibrary
 {
-    use Renderer;
+    use ComponentFetcher;
 
     /**
      * @kind accessorFunction
@@ -28,7 +26,10 @@ class AssetsLibrary extends TemplateLibrary
      */
     public static function makePublicPath($path, $build = null)
     {
-        return Phact::app()->assets->makePublicPath($path, $build);
+        /** @var AssetsComponentInterface $assetsManager */
+        if ($assetsManager = self::fetchComponent(AssetsComponentInterface::class)) {
+            return $assetsManager->makePublicPath($path, $build);
+        }
     }
 
     /**
@@ -37,7 +38,10 @@ class AssetsLibrary extends TemplateLibrary
      */
     public static function dependencyJS($path, $build = null)
     {
-        Phact::app()->assets->addDependencyJS($path, $build);
+        /** @var AssetsComponentInterface $assetsManager */
+        if ($assetsManager = self::fetchComponent(AssetsComponentInterface::class)) {
+            $assetsManager->addDependencyJS($path, $build);
+        }
     }
 
     /**
@@ -46,7 +50,10 @@ class AssetsLibrary extends TemplateLibrary
      */
     public static function dependencyCSS($path, $build = null)
     {
-        Phact::app()->assets->addDependencyCSS($path, $build);
+        /** @var AssetsComponentInterface $assetsManager */
+        if ($assetsManager = self::fetchComponent(AssetsComponentInterface::class)) {
+            $assetsManager->addDependencyCSS($path, $build);
+        }
     }
 
     /**
@@ -55,9 +62,10 @@ class AssetsLibrary extends TemplateLibrary
      */
     public static function inlineJS($params, $content)
     {
-        /** @var AssetsComponent $assets */
-        $assets = Phact::app()->assets;
-        $assets->addInlineJS($content);
+        /** @var AssetsComponentInterface $assetsManager */
+        if ($assetsManager = self::fetchComponent(AssetsComponentInterface::class)) {
+            $assetsManager->addInlineJS($content);
+        }
         return '';
     }
 
@@ -67,9 +75,10 @@ class AssetsLibrary extends TemplateLibrary
      */
     public static function inlineCSS($params, $content)
     {
-        /** @var AssetsComponent $assets */
-        $assets = Phact::app()->assets;
-        $assets->addInlineCSS($content);
+        /** @var AssetsComponentInterface $assetsManager */
+        if ($assetsManager = self::fetchComponent(AssetsComponentInterface::class)) {
+            $assetsManager->addInlineCSS($content);
+        }
         return '';
     }
 
@@ -79,12 +88,18 @@ class AssetsLibrary extends TemplateLibrary
      */
     public static function renderDependenciesJS($params)
     {
-        $template = isset($params['template']) ? $params['template'] : 'assets/dependencies_js.tpl';
-        /** @var AssetsComponent $assets */
-        $assets = Phact::app()->assets;
-        return self::renderTemplate($template, [
-            'dependencies' => $assets->getDependenciesJS()
-        ]);
+        /** @var AssetsComponentInterface $assetsManager */
+        /** @var RendererInterface $renderer */
+        if (
+            ($assetsManager = self::fetchComponent(AssetsComponentInterface::class)) &&
+            ($renderer = self::fetchComponent(RendererInterface::class))
+        ) {
+            $template = isset($params['template']) ? $params['template'] : 'assets/dependencies_js.tpl';
+            return $renderer->render($template, [
+                'dependencies' => $assetsManager->getDependenciesJS()
+            ]);
+        }
+        return '';
     }
 
     /**
@@ -93,12 +108,18 @@ class AssetsLibrary extends TemplateLibrary
      */
     public static function renderInlineJS($params)
     {
-        $template = isset($params['template']) ? $params['template'] : 'assets/inline_js.tpl';
-        /** @var AssetsComponent $assets */
-        $assets = Phact::app()->assets;
-        return self::renderTemplate($template, [
-            'inline' => $assets->getInlineJS()
-        ]);
+        /** @var AssetsComponentInterface $assetsManager */
+        /** @var RendererInterface $renderer */
+        if (
+            ($assetsManager = self::fetchComponent(AssetsComponentInterface::class)) &&
+            ($renderer = self::fetchComponent(RendererInterface::class))
+        ) {
+            $template = isset($params['template']) ? $params['template'] : 'assets/inline_js.tpl';
+            return $renderer->render($template, [
+                'inline' => $assetsManager->getInlineJS()
+            ]);
+        }
+        return '';
     }
 
 
@@ -108,12 +129,18 @@ class AssetsLibrary extends TemplateLibrary
      */
     public static function renderDependenciesCSS($params)
     {
-        $template = isset($params['template']) ? $params['template'] : 'assets/dependencies_css.tpl';
-        /** @var AssetsComponent $assets */
-        $assets = Phact::app()->assets;
-        return self::renderTemplate($template, [
-            'dependencies' => $assets->getDependenciesCSS()
-        ]);
+        /** @var AssetsComponentInterface $assetsManager */
+        /** @var RendererInterface $renderer */
+        if (
+            ($assetsManager = self::fetchComponent(AssetsComponentInterface::class)) &&
+            ($renderer = self::fetchComponent(RendererInterface::class))
+        ) {
+            $template = isset($params['template']) ? $params['template'] : 'assets/dependencies_css.tpl';
+            return $renderer->render($template, [
+                'dependencies' => $assetsManager->getDependenciesCSS()
+            ]);
+        }
+        return '';
     }
 
     /**
@@ -122,11 +149,17 @@ class AssetsLibrary extends TemplateLibrary
      */
     public static function renderInlineCSS($params)
     {
-        $template = isset($params['template']) ? $params['template'] : 'assets/inline_css.tpl';
-        /** @var AssetsComponent $assets */
-        $assets = Phact::app()->assets;
-        return self::renderTemplate($template, [
-            'inline' => $assets->getInlineCSS()
-        ]);
+        /** @var AssetsComponentInterface $assetsManager */
+        /** @var RendererInterface $renderer */
+        if (
+            ($assetsManager = self::fetchComponent(AssetsComponentInterface::class)) &&
+            ($renderer = self::fetchComponent(RendererInterface::class))
+        ) {
+            $template = isset($params['template']) ? $params['template'] : 'assets/inline_css.tpl';
+            return $renderer->render($template, [
+                'inline' => $assetsManager->getInlineCSS()
+            ]);
+        }
+        return '';
     }
 }

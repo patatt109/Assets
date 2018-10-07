@@ -18,7 +18,7 @@ use Modules\User\Commands\CreateCommand;
 use Phact\Helpers\Configurator;
 use Phact\Helpers\SmartProperties;
 
-class AssetsComponent
+class AssetsComponent implements AssetsComponentInterface
 {
     use SmartProperties;
 
